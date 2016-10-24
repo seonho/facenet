@@ -106,14 +106,14 @@ def read_and_augument_data(image_list, label_list, image_size, batch_size, max_n
     images_and_labels = []
     for _ in range(nrof_preprocess_threads):
         image, label = read_images_from_disk(input_queue)
-        if random_crop:
-            image = tf.random_crop(image, [image_size, image_size, 3])
-        else:
-            image = tf.image.resize_image_with_crop_or_pad(image, image_size, image_size)
-        if random_flip:
-            image = tf.image.random_flip_left_right(image)
+        # if random_crop:
+        #     image = tf.random_crop(image, [image_size[0], image_size[1], 3])
+        # else:
+        #     image = tf.image.resize_image_with_crop_or_pad(image, image_size[0], image_size[1])
+        # if random_flip:
+        #     image = tf.image.random_flip_left_right(image)
         #pylint: disable=no-member
-        image.set_shape((image_size, image_size, 3))
+        image.set_shape((image_size[0], image_size[1], 3))
         image = tf.image.per_image_whitening(image)
         images_and_labels.append([image, label])
 
@@ -225,7 +225,7 @@ def to_rgb(img):
   
 def load_data(image_paths, do_random_crop, do_random_flip, image_size, do_prewhiten=True):
     nrof_samples = len(image_paths)
-    images = np.zeros((nrof_samples, image_size, image_size, 3))
+    images = np.zeros((nrof_samples, image_size[0], image_size[1], 3))
     for i in range(nrof_samples):
         img = misc.imread(image_paths[i])
         if img.ndim == 2:
