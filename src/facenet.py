@@ -350,7 +350,7 @@ class ImageClass():
   
     def __len__(self):
         return len(self.image_paths)
-  
+
 def get_dataset(paths):
     dataset = []
     for path in paths.split(':'):
@@ -492,7 +492,7 @@ def plot_roc(fpr, tpr, label):
     plt.plot([0, 1], [0, 1], 'g--')
     plt.grid(True)
     plt.show()
-  
+
 def calculate_val(thresholds, embeddings1, embeddings2, actual_issame, far_target, seed, nrof_folds=10):
     assert(embeddings1.shape[0] == embeddings2.shape[0])
     assert(embeddings1.shape[1] == embeddings2.shape[1])
