@@ -90,7 +90,8 @@ def read_images_from_disk(input_queue):
     """
     label = input_queue[1]
     file_contents = tf.read_file(input_queue[0])
-    example = tf.image.decode_png(file_contents, channels=3)
+    # example = tf.image.decode_png(file_contents, channels=3)
+    example = tf.image.decode_jpeg(file_contents, channels=3)
     return example, label
   
 def read_and_augument_data(image_list, label_list, image_size, batch_size, max_nrof_epochs, 
@@ -106,13 +107,13 @@ def read_and_augument_data(image_list, label_list, image_size, batch_size, max_n
     images_and_labels = []
     for _ in range(nrof_preprocess_threads):
         image, label = read_images_from_disk(input_queue)
-        # if random_crop:
-        #     image = tf.random_crop(image, [image_size[0], image_size[1], 3])
-        # else:
-        #     image = tf.image.resize_image_with_crop_or_pad(image, image_size[0], image_size[1])
-        # if random_flip:
-        #     image = tf.image.random_flip_left_right(image)
-        #pylint: disable=no-member
+        if random_crop:
+            image = tf.random_crop(image, [image_size[0], image_size[1], 3])
+        else:
+            image = tf.image.resize_image_with_crop_or_pad(image, image_size[0], image_size[1])
+        if random_flip:
+            image = tf.image.random_flip_left_right(image)
+        # pylint: disable=no-member
         image.set_shape((image_size[0], image_size[1], 3))
         image = tf.image.per_image_whitening(image)
         images_and_labels.append([image, label])
@@ -201,15 +202,16 @@ def prewhiten(x):
     return y  
 
 def crop(image, random_crop, image_size):
-    if image.shape[1]>image_size:
-        sz1 = image.shape[1]//2
-        sz2 = image_size//2
-        if random_crop:
-            diff = sz1-sz2
-            (h, v) = (np.random.randint(-diff, diff+1), np.random.randint(-diff, diff+1))
-        else:
-            (h, v) = (0,0)
-        image = image[(sz1-sz2+v):(sz1+sz2+v),(sz1-sz2+h):(sz1+sz2+h),:]
+    image = misc.imresize(image, (image_size[0], image_size[1]))
+    # if image.shape[1]>image_size:
+    #     sz1 = image.shape[1]//2
+    #     sz2 = image_size//2
+    #     if random_crop:
+    #         diff = sz1-sz2
+    #         (h, v) = (np.random.randint(-diff, diff+1), np.random.randint(-diff, diff+1))
+    #     else:
+    #         (h, v) = (0,0)
+    #     image = image[(sz1-sz2+v):(sz1+sz2+v),(sz1-sz2+h):(sz1+sz2+h),:]
     return image
   
 def flip(image, random_flip):
