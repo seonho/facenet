@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from scipy.misc import imsave
 
 from utils import *
-
+import os
 
 def main(args):
     output_dir = args.output_dir
@@ -18,8 +18,9 @@ def main(args):
             cam_id = j // 2
             src_file = '{:04d}{:03d}.png'.format(i + 1, j + 1)
             tgt_file = 'cam_{}/{:05d}_{:05d}.png'.format(cam_id, i, j % 2)
-            shutil.copy(osp.join(args.cuhk01_dir, src_file),
-                        osp.join(args.output_dir, tgt_file))
+            os.symlink(osp.abspath(osp.join(args.cuhk01_dir, src_file)), osp.abspath(osp.join(args.output_dir, tgt_file)))
+            #shutil.copy(osp.join(args.cuhk01_dir, src_file),
+            #            osp.join(args.output_dir, tgt_file))
             p_images[cam_id].append(tgt_file)
         identities[i] = p_images
     # Save meta information into a json file

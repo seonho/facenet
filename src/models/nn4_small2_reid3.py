@@ -66,8 +66,10 @@ def inference(images, keep_probability, phase_train=True, weight_decay=0.0):
     endpoints['incept5b'] = net
     net = network.apool(net,  3, 3, 1, 1, 'VALID', 'pool6')
     endpoints['pool6'] = net
+    
     # net = tf.reshape(net, [-1, 736])
-    net = tf.reshape(net, [-1, 8*2*736])
+    shape = net.get_shape().as_list()
+    net = tf.reshape(net, [-1, shape[1] * shape[2] * shape[3] ])
     endpoints['prelogits'] = net
     net = tf.nn.dropout(net, keep_probability)
     endpoints['dropout'] = net
